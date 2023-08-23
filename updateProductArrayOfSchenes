@@ -1,33 +1,30 @@
-
 const newProductIds = ["68066", "965487"];
 const schemeIdsToUpdate = ["SC42095", "SC32096", "SC65681", "SC85113", "SC76574"];
 
 async function updateSchemeWithNewProducts(schemeId) {
     try {
-      const newProducts = await Product.find(
-        { product_id: { $in: newProductIds } },
-        { _id: 1, product_name: 1, product_id: 1, ptr: 1, logo: 1 }
-      );
-  
-      await Scheme.updateOne(
-        { scheme_id: schemeId },
-        { $set: { products: newProducts } }
-      );
-    console.log(newProducts);
-  
-      console.log(`Products updated for scheme ${schemeId}.`);
-    } catch (error) {
-      console.error(`An error occurred for scheme ${schemeId}:`, error);
-    }
-  }
+        const newProducts = await Product.find(
+            { product_id: { $in: newProductIds }, status: "active" },
+            { _id: 1, product_name: 1, product_id: 1, ptr: 1, logo: 1 }
+        );
+        await Scheme.updateOne(
+            { scheme_id: schemeId },
+            { $set: { products: newProducts } }
+        );
+        console.log(newProducts);
 
-async function updateSchemes() {
-  try {
-    for (const schemeId of schemeIdsToUpdate) await updateSchemeWithNewProducts(schemeId);
-    console.log('All specified schemes updated with new products.');
-  } catch (error) {
-    console.error('An error occurred:', error);
-  } 
+        console.log(`Products updated for scheme ${schemeId}.`);
+    } catch (error) {
+        console.error(`An error occurred for scheme ${schemeId}:`, error);
+    }
 }
 
-updateSchemes()
+async function updateSchemes() {
+    try {
+        for (const schemeId of schemeIdsToUpdate) await updateSchemeWithNewProducts(schemeId);
+        console.log('All specified schemes updated with new products.');
+    } catch (error) {
+        console.error('An error occurred:', error);
+    }
+}
+
